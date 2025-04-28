@@ -58,7 +58,7 @@ best_params, best_score = optimizer.optimize(
     pop_size=50,
     generations=30,
     p=0.5,   # Proporsi Big Male
-    d=0.5,   # Mlilpir rate
+    d=0.5,   # Mlipir rate
     adapt_population=True,
     verbose=True
 )
