@@ -5,7 +5,7 @@ import warnings
 from functools import lru_cache
 
 class KomodoMlipirOptimizer:
-    def __init__(self, model_class, param_bounds, X_train, y_train, X_val, y_val, metric='accuracy'):
+    def __init__(self, model_class, param_bounds, X_train, y_train, X_test, y_test, metric='accuracy'):
         """
         Args:
             model_class: Class model (e.g., XGBClassifier).
@@ -18,8 +18,8 @@ class KomodoMlipirOptimizer:
         self.param_bounds = param_bounds
         self.X_train = X_train
         self.y_train = y_train
-        self.X_val = X_val
-        self.y_val = y_val
+        self.X_test = X_test
+        self.y_test = y_test
         self.metric = metric
         self.scorer = get_scorer(metric)
         self.best_params_history = []
@@ -46,7 +46,7 @@ class KomodoMlipirOptimizer:
         try:
             model = self.model_class(**params)
             model.fit(self.X_train, self.y_train)
-            score = self.scorer(model, self.X_val, self.y_val)
+            score = self.scorer(model, self.X_test, self.y_test)
             return score if np.isfinite(score) else (-np.inf if self.scorer._sign == 1 else np.inf)
         except Exception as e:
             print(f"Error with params {params}: {str(e)}")
@@ -79,9 +79,9 @@ class KomodoMlipirOptimizer:
             self.best_params_history.append(best_params)
             self.best_score_history.append(best_score)
             
-            if verbose and (gen % 5 == 0 or gen == generations - 1):
+            if verbose:
                 print(f"Gen {gen+1:03d} | Best {self.metric}: {best_score:.4f} | Params: {best_params}")
-            
+                
             # Selection: Top 50%
             survivors = pop[:pop_size // 2]
             
