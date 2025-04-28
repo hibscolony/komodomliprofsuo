@@ -1,5 +1,5 @@
 
-# Komodo Mlipir Optimizer (KMA)
+# Komodo Mlipir Algorithm (KMA)
 
 **Komodo Mlipir Algorithm (KMA)** adalah algoritma optimasi berbasis perilaku alami komodo,  
 yang membagi populasi ke dalam tiga kelompok: **Big Male**, **Female**, dan **Small Male**.  
