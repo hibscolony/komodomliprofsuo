@@ -119,7 +119,7 @@ class KomodoMlipirOptimizer:
             small = self.mlipir_small_males(small, big, d)
 
             # Clip to bounds
-            for group in (big, small, [female]):
+            for group in (big, small, female[np.newaxis, :]):
                 for i, (low, high) in enumerate(self.param_bounds.values()):
                     group[:, i] = np.clip(group[:, i], low, high) if isinstance(group, np.ndarray) else np.clip(group[i], low, high)
 
