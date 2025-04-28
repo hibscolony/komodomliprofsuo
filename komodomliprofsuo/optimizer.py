@@ -3,7 +3,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import get_scorer
 
 class KomodoMlipirOptimizer:
-    def __init__(self, model_class, param_bounds, X, y, metric='accuracy', test_size=0.3, random_state=42):
+    def __init__(self, model_class, param_bounds, X, y, metric='accuracy', test_size=0.2, random_state=42):
         self.model_class = model_class
         self.param_bounds = param_bounds
         self.metric = metric
