@@ -72,8 +72,8 @@ Komodo Mlipir Algorithm diadopsi berdasarkan publikasi ilmiah berikut:
 
 > Suyanto, R., Huda, M., & Suhartono, D. (2022).  
 > Komodo mlipir algorithm: A new metaheuristic optimization algorithm.  
-> *Applied Soft Computing, 114*, 108055.  
-> https://doi.org/10.1016/j.asoc.2021.108055
+> *Applied Soft Computing, 114*, 108043.  
+> https://doi.org/10.1016/j.asoc.2021.108043
 
 Pastikan untuk **mengutip paper ini** jika menggunakan algoritma ini dalam penelitian atau proyek akademik.
 
