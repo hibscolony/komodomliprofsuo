@@ -88,7 +88,7 @@ class KomodoMlipirOptimizer:
                 extra = survivors[:(pop_size // 2 - len(children))]
                 pop = np.vstack([survivors, children, extra])
             else:
-                pop = np.vstack([survivors, children[:pop_size // 2])
+                pop = np.vstack([survivors, children[:pop_size // 2]])
     
             # Evaluate fitness again
             fitness = np.array([self.evaluate(self.decode_params(ind)) for ind in pop])
