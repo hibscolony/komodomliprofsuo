@@ -234,6 +234,6 @@ class KomodoMlipirOptimizer:
                 print(f"Gen {gen+1:03d}/{generations} | "
                       f"Best {self.metric}: {global_best_score:.4f} | "
                       f"Pop size: {n} | "
-                      f"Best Global Params: {best_params} ")
+                      f"Best Global Params: {global_best_params} ")
 
         return global_best_params, global_best_score
