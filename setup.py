@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="komodomliprofsuo",
-    version="0.1.1",
+    version="0.1.2",
     packages=find_packages(),
     install_requires=[
         "numpy>=1.20.0",
