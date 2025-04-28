@@ -22,12 +22,19 @@ class KomodoMlipirOptimizer:
         return params
 
     def evaluate(self, params):
-        try:
-            model = self.model_class(**params)
-            model.fit(self.X_train, self.y_train)
-            return self.scorer(model, self.X_val, self.y_val)
-        except:
+    try:
+        model = self.model_class(**params)
+        model.fit(self.X_train, self.y_train)
+        score = self.scorer(model, self.X_val, self.y_val)
+
+        if not np.isfinite(score):  # Kalau NaN atau inf
             return -np.inf if self.scorer._sign == 1 else np.inf
+        
+        return score
+    except Exception as e:
+        print(f"Evaluation error with params {params}: {e}")
+        return -np.inf if self.scorer._sign == 1 else np.inf
+
 
     def optimize(self, pop_size=20, generations=30, mutation_rate=0.1, verbose=True):
         dim = len(self.param_bounds)
