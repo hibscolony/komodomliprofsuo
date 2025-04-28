@@ -36,63 +36,63 @@ class KomodoMlipirOptimizer:
             return -np.inf if self.scorer._sign == 1 else np.inf
     
 
-   def optimize(self, pop_size=20, generations=30, mutation_rate=0.1, verbose=True):
-    dim = len(self.param_bounds)
+    def optimize(self, pop_size=20, generations=30, mutation_rate=0.1, verbose=True):
+        dim = len(self.param_bounds)
+        
+        # Initialize population
+        pop = np.zeros((pop_size, dim))
+        for i, bounds in enumerate(self.param_bounds.values()):
+            if isinstance(bounds[0], int):
+                pop[:, i] = np.random.randint(bounds[0], bounds[1] + 1, pop_size)
+            else:
+                pop[:, i] = np.random.uniform(bounds[0], bounds[1], pop_size)
     
-    # Initialize population
-    pop = np.zeros((pop_size, dim))
-    for i, bounds in enumerate(self.param_bounds.values()):
-        if isinstance(bounds[0], int):
-            pop[:, i] = np.random.randint(bounds[0], bounds[1] + 1, pop_size)
-        else:
-            pop[:, i] = np.random.uniform(bounds[0], bounds[1], pop_size)
-
-    # Evaluate initial fitness
-    fitness = np.array([self.evaluate(self.decode_params(ind)) for ind in pop])
-
-    for gen in range(generations):
-        # Sort population by fitness
-        idx = np.argsort(fitness)[::-1] if self.scorer._sign == 1 else np.argsort(fitness)
-        pop, fitness = pop[idx], fitness[idx]
-
-        # Record best
-        best_params = self.decode_params(pop[0])
-        best_score = fitness[0]
-        self.best_params_history.append(best_params)
-        self.best_score_history.append(best_score)
-
-        if verbose:
-            scores_list = np.round(fitness, 4).tolist()
-            print(f"Generation {gen+1} - Scores: {scores_list} - Best Score: {best_score:.4f}")
-
-        # Selection: Keep top half
-        survivors = pop[:pop_size // 2]
-
-        # Mutation: Create new individuals by mutating survivors
-        children = []
-        for individual in survivors:
-            child = individual.copy()
-            for j in range(dim):
-                if np.random.rand() < mutation_rate:
-                    bounds = list(self.param_bounds.values())[j]
-                    if isinstance(bounds[0], int):
-                        child[j] = np.random.randint(bounds[0], bounds[1] + 1)
-                    else:
-                        child[j] = np.random.uniform(bounds[0], bounds[1])
-            children.append(child)
-
-        children = np.array(children)
-
-        # Combine survivors and new children to form next generation
-        if len(children) < pop_size // 2:
-            extra = survivors[:(pop_size // 2 - len(children))]
-            pop = np.vstack([survivors, children, extra])
-        else:
-            pop = np.vstack([survivors, children[:pop_size // 2])
-
-        # Evaluate fitness again
+        # Evaluate initial fitness
         fitness = np.array([self.evaluate(self.decode_params(ind)) for ind in pop])
-
-    # Final best
-    best_gen = np.argmax(self.best_score_history) if self.scorer._sign == 1 else np.argmin(self.best_score_history)
-    return self.best_params_history[best_gen], self.best_score_history[best_gen]
+    
+        for gen in range(generations):
+            # Sort population by fitness
+            idx = np.argsort(fitness)[::-1] if self.scorer._sign == 1 else np.argsort(fitness)
+            pop, fitness = pop[idx], fitness[idx]
+    
+            # Record best
+            best_params = self.decode_params(pop[0])
+            best_score = fitness[0]
+            self.best_params_history.append(best_params)
+            self.best_score_history.append(best_score)
+    
+            if verbose:
+                scores_list = np.round(fitness, 4).tolist()
+                print(f"Generation {gen+1} - Scores: {scores_list} - Best Score: {best_score:.4f}")
+    
+            # Selection: Keep top half
+            survivors = pop[:pop_size // 2]
+    
+            # Mutation: Create new individuals by mutating survivors
+            children = []
+            for individual in survivors:
+                child = individual.copy()
+                for j in range(dim):
+                    if np.random.rand() < mutation_rate:
+                        bounds = list(self.param_bounds.values())[j]
+                        if isinstance(bounds[0], int):
+                            child[j] = np.random.randint(bounds[0], bounds[1] + 1)
+                        else:
+                            child[j] = np.random.uniform(bounds[0], bounds[1])
+                children.append(child)
+    
+            children = np.array(children)
+    
+            # Combine survivors and new children to form next generation
+            if len(children) < pop_size // 2:
+                extra = survivors[:(pop_size // 2 - len(children))]
+                pop = np.vstack([survivors, children, extra])
+            else:
+                pop = np.vstack([survivors, children[:pop_size // 2])
+    
+            # Evaluate fitness again
+            fitness = np.array([self.evaluate(self.decode_params(ind)) for ind in pop])
+    
+        # Final best
+        best_gen = np.argmax(self.best_score_history) if self.scorer._sign == 1 else np.argmin(self.best_score_history)
+        return self.best_params_history[best_gen], self.best_score_history[best_gen]
