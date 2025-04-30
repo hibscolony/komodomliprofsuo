@@ -3,12 +3,13 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import get_scorer
 from functools import lru_cache
 import warnings
-from typing import Dict, Tuple, Union, List, Callable
+from typing import Dict, Tuple, Union, List, Callable, Any
 
 class KomodoMlipirOptimizer:
     def __init__(self, 
                  model_class: Callable,
                  param_bounds: Dict[str, Tuple[Union[int, float], Union[int, float]]],
+                 static_params : Dict[str,Any],
                  X_train: np.ndarray,
                  y_train: np.ndarray,
                  X_val: np.ndarray,
@@ -28,6 +29,7 @@ class KomodoMlipirOptimizer:
         """
         self.model_class = model_class
         self.param_bounds = param_bounds
+        self.static_params = static_params
         self.metric = metric
         self.scorer = get_scorer(metric)
         self.X_train = X_train
@@ -55,7 +57,7 @@ class KomodoMlipirOptimizer:
         """Cached evaluation function using hashable parameters."""
         params = self.decode_params(np.array(params_tuple))
         try:
-            model = self.model_class(**params)
+            model = self.model_class(**params,**self.static_params)
             model.fit(self.X_train, self.y_train)
             score = self.scorer(model, self.X_val, self.y_val)
             return score if np.isfinite(score) else (-np.inf if self.scorer._sign == 1 else np.inf)
