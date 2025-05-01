@@ -8,7 +8,7 @@ setup(
         "numpy>=1.20.0",
         "scikit-learn>=1.0.0",
     ],
-    author="Nama Anda",
+    author="Koding Muda Nusantara",
     description="Komodo Mlipir Algorithm for Hyperparameter Optimization",
     url="https://github.com/hibscolony/komodomliprofsuo",
 )
