@@ -60,11 +60,11 @@ class KomodoMlipirOptimizer:
             model = self.model_class(**params,**self.static_params)
             model.fit(self.X_train, self.y_train)
             score = self.scorer(model, self.X_val, self.y_val)
-            return score if np.isfinite(score) else (-np.inf if self.scorer._sign == 1 else np.inf)
+            return score if np.isfinite(score) else -np.inf
         except Exception as e:
             if hasattr(self, 'verbose') and self.verbose:
                 print(f"Evaluation error with params {params}: {str(e)}")
-            return -np.inf if self.scorer._sign == 1 else np.inf
+            return -np.inf
 
     def evaluate(self, params: np.ndarray) -> float:
         """Evaluate parameters with caching."""
@@ -92,9 +92,7 @@ class KomodoMlipirOptimizer:
                     continue
                 r1 = np.random.rand()
                 r2 = np.random.rand()
-                if (self.scorer._sign == 1 and fitness_big[j] > fitness_big[i]) or \
-                   (self.scorer._sign == -1 and fitness_big[j] < fitness_big[i]) or \
-                   r2 < 0.5:
+                if fitness_big[j] > fitness_big[i] or r2 < 0.5:
                     move += r1 * (big[j] - big[i])
                 else:
                     move += r1 * (big[i] - big[j])
@@ -171,12 +169,12 @@ class KomodoMlipirOptimizer:
         pop = self._initialize_population(n)
         fitness = np.array([self.evaluate(ind) for ind in pop])
 
-        global_best_score = -np.inf if self.scorer._sign == 1 else np.inf
+        global_best_score = -np.inf
         global_best_params = None
 
         for gen in range(generations):
             # Sort population by fitness
-            idx = np.argsort(fitness)[::-1] if self.scorer._sign == 1 else np.argsort(fitness)
+            idx = np.argsort(fitness)[::-1]
             pop, fitness = pop[idx], fitness[idx]
 
             # Classify individuals
@@ -193,7 +191,7 @@ class KomodoMlipirOptimizer:
             big = self._move_big_males(big, fitness_big)
 
             # 2. Update Female (mating or parthenogenesis)
-            winner_big = big[np.argmax(fitness_big) if self.scorer._sign == 1 else np.argmin(fitness_big)]
+            winner_big = big[np.argmax(fitness_big)]
             female = self._mate_or_parthenogenesis(female, winner_big)
 
             # 3. Move Small Males (exploration)
@@ -209,13 +207,12 @@ class KomodoMlipirOptimizer:
             fitness = np.array([self.evaluate(ind) for ind in pop])
 
             # Track best solution
-            best_idx = np.argmax(fitness) if self.scorer._sign == 1 else np.argmin(fitness)
+            best_idx = np.argmax(fitness)
             current_best_score = fitness[best_idx]
             current_best_params = self.decode_params(pop[best_idx])
 
             # Update global best
-            if (self.scorer._sign == 1 and current_best_score > global_best_score) or \
-               (self.scorer._sign == -1 and current_best_score < global_best_score):
+            if current_best_score > global_best_score:
                 global_best_score = current_best_score
                 global_best_params = current_best_params
 
